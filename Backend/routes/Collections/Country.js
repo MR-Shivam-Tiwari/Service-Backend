@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Country = require('../../Model/Country');
+const Country = require('../../Model/CountrySchema');
 
 // Middleware function to get a country by ID
 async function getCountry(req, res, next) {
