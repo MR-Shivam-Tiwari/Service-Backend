@@ -3,6 +3,10 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const Country = require('./routes/Collections/Country');
 const State = require('./routes/Collections/State');
+const City = require('./routes/Collections/City');
+const Branch = require('./routes/Collections/Branch');
+const Role = require('./routes/Collections/roles');
+const UserType = require('./routes/Collections/UserType');
 
 const app = express();
 
@@ -25,6 +29,10 @@ mongoose.connect('mongodb+srv://shivamt2023:ft123shivam123@cluster0.qcx5f1c.mong
 // Import routes
 app.use('/collections', Country);
 app.use('/collections', State);
+app.use('/collections', City);
+app.use('/collections', Branch);
+app.use('/collections', Role);
+app.use('/collections', UserType);
 
 // Routes
 app.get('/', (req, res) => {

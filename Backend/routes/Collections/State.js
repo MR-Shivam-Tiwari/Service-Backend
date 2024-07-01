@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const State = require('../../Model/StateSchema');
+const State = require('../../Model/CollectionSchema/StateSchema');
 
 // Middleware function to get a state by ID
 async function getState(req, res, next) {
@@ -57,7 +57,7 @@ router.get('/state/:id', getState, (req, res) => {
 });
 
 // Update a state
-router.patch('/state/:id', getState, checkDuplicateState, async (req, res) => {
+router.patch('/state/:id', getState, async (req, res) => {
     if (req.body.name != null) {
         res.state.name = req.body.name;
     }
@@ -75,6 +75,8 @@ router.patch('/state/:id', getState, checkDuplicateState, async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 });
+
+
 
 // Delete a state
 router.delete('/state/:id', async (req, res) => {
