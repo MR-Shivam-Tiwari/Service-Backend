@@ -7,6 +7,8 @@ const City = require('./routes/Collections/City');
 const Branch = require('./routes/Collections/Branch');
 const Role = require('./routes/Collections/roles');
 const UserType = require('./routes/Collections/UserType');
+const DepartMent = require('./routes/Collections/Department');
+const ProductGroup = require('./routes/Collections/ProductGroup');
 
 const app = express();
 
@@ -33,6 +35,8 @@ app.use('/collections', City);
 app.use('/collections', Branch);
 app.use('/collections', Role);
 app.use('/collections', UserType);
+app.use('/collections', DepartMent);
+app.use('/collections', ProductGroup);
 
 // Routes
 app.get('/', (req, res) => {
