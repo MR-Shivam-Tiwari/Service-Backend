@@ -52,6 +52,7 @@ router.get('/city', async (req, res) => {
 });
 
 
+
 router.get('/city/:id', getCity , (req,res) =>{
     res.json(res.city)
 })

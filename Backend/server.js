@@ -11,6 +11,8 @@ const DepartMent = require('./routes/Collections/Department');
 const ProductGroup = require('./routes/Collections/ProductGroup');
 const CheckList = require('./routes/Collections/CheckList');
 const PmMaster = require('./routes/Collections/PmMaster');
+const User = require('./routes/Master/User');
+const Dealer = require('./routes/Master/Dealer');
 
 const app = express();
 
@@ -23,12 +25,12 @@ mongoose.connect('mongodb+srv://shivamt2023:ft123shivam123@cluster0.qcx5f1c.mong
   useUnifiedTopology: true, // Remove deprecated option
   // dbName: 'Service-Portal' // Add your actual database name here
 })
-.then(() => {
-  console.log('Connected to MongoDB');
-})
-.catch((err) => {
-  console.error('Error connecting to MongoDB:', err);
-});
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch((err) => {
+    console.error('Error connecting to MongoDB:', err);
+  });
 
 // Import routes
 app.use('/collections', Country);
@@ -41,6 +43,8 @@ app.use('/collections', DepartMent);
 app.use('/collections', ProductGroup);
 app.use('/collections', CheckList);
 app.use('/collections', PmMaster);
+app.use('/collections', User);
+app.use('/collections', Dealer);
 
 // Routes
 app.get('/', (req, res) => {
