@@ -92,7 +92,7 @@ router.delete('/branch/:id', async (req, res) => {
         if (deletedBranch.deletedCount === 0) {
             return res.status(404).json({ message: 'Branch Not Found' })
         }
-        res.json({ message: " Branch Deleted" })
+        res.json({ message: "Branch Deleted" })
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
