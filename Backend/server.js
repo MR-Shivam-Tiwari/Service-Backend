@@ -13,6 +13,12 @@ const CheckList = require('./routes/Collections/CheckList');
 const PmMaster = require('./routes/Collections/PmMaster');
 const User = require('./routes/Master/User');
 const Dealer = require('./routes/Master/Dealer');
+const Equipment = require('./routes/Master/Equipment');
+const Product = require('./routes/Master/Product');
+const ReportedProblemSchema = require('./routes/Master/ReportedProblem');
+const WarrantyCode  = require('./routes/Master/WarrantyCode');
+const ReplacedPartCode  = require('./routes/Master/ReplacedPartCode');
+const Aerb  = require('./routes/Master/Aerb');
 
 const app = express();
 
@@ -45,6 +51,12 @@ app.use('/collections', CheckList);
 app.use('/collections', PmMaster);
 app.use('/collections', User);
 app.use('/collections', Dealer);
+app.use('/collections', Equipment);
+app.use('/collections', Product);
+app.use('/collections', ReportedProblemSchema);
+app.use('/collections', WarrantyCode);
+app.use('/collections', ReplacedPartCode);
+app.use('/collections', Aerb);
 
 // Routes
 app.get('/', (req, res) => {
