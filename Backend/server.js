@@ -19,6 +19,12 @@ const ReportedProblemSchema = require('./routes/Master/ReportedProblem');
 const WarrantyCode  = require('./routes/Master/WarrantyCode');
 const ReplacedPartCode  = require('./routes/Master/ReplacedPartCode');
 const Aerb  = require('./routes/Master/Aerb');
+const Customer  = require('./routes/Upload/Customer');
+const Amccontracts  = require('./routes/Upload/AMCContract');
+const DealerStock  = require('./routes/Upload/DealerStock');
+const Hubstocks  = require('./routes/Upload/HubStock');
+const Pendinginstallations  = require('./routes/Upload/PendingInstallation');
+const Pendingcomplaints  = require('./routes/Upload/PendingCompliants');
 
 const app = express();
 
@@ -57,6 +63,12 @@ app.use('/collections', ReportedProblemSchema);
 app.use('/collections', WarrantyCode);
 app.use('/collections', ReplacedPartCode);
 app.use('/collections', Aerb);
+app.use('/collections', Customer);
+app.use('/collections', Amccontracts);
+app.use('/collections', DealerStock);
+app.use('/collections', Hubstocks);
+app.use('/collections', Pendinginstallations);
+app.use('/collections', Pendingcomplaints);
 
 // Routes
 app.get('/', (req, res) => {
