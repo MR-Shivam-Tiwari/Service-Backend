@@ -44,10 +44,23 @@ router.post('/depart', checkDuplicateDepart, async (req, res) => {
 
 router.get('/depart', async (req, res) => {
     try {
-        const department = await Department.find();
-        res.json(department)
+        const page = parseInt(req.query.page) || 1; // Current page number, defaulting to 1
+        const limit = parseInt(req.query.limit) || 10; // Number of documents per page, defaulting to 10
+
+        const skip = (page - 1) * limit; // Calculate the number of documents to skip
+
+        const departments = await Department.find().skip(skip).limit(limit); // Fetch departments for the current page
+        const totalDepartments = await Department.countDocuments(); // Total number of departments
+
+        const totalPages = Math.ceil(totalDepartments / limit); // Calculate total number of pages
+
+        res.json({
+            departments,
+            totalPages,
+            totalDepartments
+        });
     } catch (err) {
-        res.status(500).json({ message: err.message })
+        res.status(500).json({ message: err.message }); // Handle error and return JSON response with status 500 (Internal Server Error)
     }
 });
 

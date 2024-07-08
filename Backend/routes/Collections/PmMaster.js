@@ -28,10 +28,23 @@ function validatePmstatus(req, res, next) {
 // GET all checklists
 router.get('/pmmaster', async (req, res) => {
     try {
-        const checklists = await PmMaster.find();
-        res.json(checklists);
+        const page = parseInt(req.query.page) || 1; // Current page number, defaulting to 1
+        const limit = parseInt(req.query.limit) || 10; // Number of documents per page, defaulting to 10
+
+        const skip = (page - 1) * limit; // Calculate the number of documents to skip
+
+        const pmMasters = await PmMaster.find().skip(skip).limit(limit); // Fetch PM Masters for the current page
+        const totalPmMasters = await PmMaster.countDocuments(); // Total number of PM Masters
+
+        const totalPages = Math.ceil(totalPmMasters / limit); // Calculate total number of pages
+
+        res.json({
+            pmMasters,
+            totalPages,
+            totalPmMasters
+        });
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        res.status(500).json({ message: err.message }); // Handle error and return JSON response with status 500 (Internal Server Error)
     }
 });
 
