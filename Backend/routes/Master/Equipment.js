@@ -151,4 +151,34 @@ router.delete('/equipment/:id', async (req, res) => {
     }
 });
 
+router.get('/searchequipment', async (req, res) => {
+    try {
+        const { q } = req.query;
+        
+        if (!q) {
+            return res.status(400).json({ message: 'Query parameter is required' });
+        }
+
+        const query = {
+            $or: [
+                { name: { $regex: q, $options: 'i' } },
+                { materialdescription: { $regex: q, $options: 'i' } },
+                { serialnumber: { $regex: q, $options: 'i' } },
+                { materialcode: { $regex: q, $options: 'i' } },
+                { status: { $regex: q, $options: 'i' } },
+                { currentcustomer: { $regex: q, $options: 'i' } },
+                { dealer: { $regex: q, $options: 'i' } },
+                { palnumber: { $regex: q, $options: 'i' } },
+                { equipmentid: { $regex: q, $options: 'i' } }
+            ]
+        };
+
+        const users = await Equipment.find(query);
+
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 module.exports = router;
