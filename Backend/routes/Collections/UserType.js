@@ -44,13 +44,25 @@ router.post('/usertype', checkDuplicateUserType, async (req, res) => {
 // Get all states
 router.get('/usertype', async (req, res) => {
     try {
-        const states = await UserType.find();
-        res.json(states); // Return all states
+        const page = parseInt(req.query.page) || 1; // Current page number, defaulting to 1
+        const limit = parseInt(req.query.limit) || 10; // Number of documents per page, defaulting to 10
+
+        const skip = (page - 1) * limit; // Calculate the number of documents to skip
+
+        const userTypes = await UserType.find().skip(skip).limit(limit); // Fetch UserTypes for the current page
+        const totalUserTypes = await UserType.countDocuments(); // Total number of UserTypes
+
+        const totalPages = Math.ceil(totalUserTypes / limit); // Calculate total number of pages
+
+        res.json({
+            userTypes,
+            totalPages,
+            totalUserTypes
+        });
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        res.status(500).json({ message: err.message }); // Handle error and return JSON response with status 500 (Internal Server Error)
     }
 });
-
 // Get a single state
 router.get('/usertype/:id', getUserType, (req, res) => {
     res.json(res.usertype); // Return single user type fetched by middleware

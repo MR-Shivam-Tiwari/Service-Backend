@@ -34,10 +34,23 @@ function setFeatureCrudAccess(featureCrudAccess) {
 // Get all roles
 router.get('/role', async (req, res) => {
     try {
-        const roles = await roleSchema.find();
-        res.json(roles);
+        const page = parseInt(req.query.page) || 1; // Current page number, defaulting to 1
+        const limit = parseInt(req.query.limit) || 10; // Number of documents per page, defaulting to 10
+
+        const skip = (page - 1) * limit; // Calculate the number of documents to skip
+
+        const roles = await Role.find().skip(skip).limit(limit); // Fetch roles for the current page
+        const totalRoles = await Role.countDocuments(); // Total number of roles
+
+        const totalPages = Math.ceil(totalRoles / limit); // Calculate total number of pages
+
+        res.json({
+            roles,
+            totalPages,
+            totalRoles
+        });
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        res.status(500).json({ message: err.message }); // Handle error and return JSON response with status 500 (Internal Server Error)
     }
 });
 

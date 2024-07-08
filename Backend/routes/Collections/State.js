@@ -44,10 +44,23 @@ router.post('/state', checkDuplicateState, async (req, res) => {
 // Get all states
 router.get('/state', async (req, res) => {
     try {
-        const states = await State.find();
-        res.json(states); // Return all states
+        const page = parseInt(req.query.page) || 1; // Current page number, defaulting to 1
+        const limit = parseInt(req.query.limit) || 10; // Number of documents per page, defaulting to 10
+
+        const skip = (page - 1) * limit; // Calculate the number of documents to skip
+
+        const states = await State.find().skip(skip).limit(limit); // Fetch states for the current page
+        const totalStates = await State.countDocuments(); // Total number of states
+
+        const totalPages = Math.ceil(totalStates / limit); // Calculate total number of pages
+
+        res.json({
+            states,
+            totalPages,
+            totalStates
+        });
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        res.status(500).json({ message: err.message }); // Handle error and return JSON response with status 500 (Internal Server Error)
     }
 });
 

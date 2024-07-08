@@ -42,13 +42,25 @@ router.post('/productgroup', checkDuplicateProductGroup, async (req, res) => {
 
 router.get('/productgroup', async (req, res) => {
     try {
-        const productgroup = await ProductGroup.find();
-        res.status(200).json(productgroup)
+        const page = parseInt(req.query.page) || 1; // Current page number, defaulting to 1
+        const limit = parseInt(req.query.limit) || 10; // Number of documents per page, defaulting to 10
 
+        const skip = (page - 1) * limit; // Calculate the number of documents to skip
+
+        const productGroups = await ProductGroup.find().skip(skip).limit(limit); // Fetch Product Groups for the current page
+        const totalProductGroups = await ProductGroup.countDocuments(); // Total number of Product Groups
+
+        const totalPages = Math.ceil(totalProductGroups / limit); // Calculate total number of pages
+
+        res.status(200).json({
+            productGroups,
+            totalPages,
+            totalProductGroups
+        });
     } catch (err) {
-        return res.status(500).json({ message: err.message })
+        res.status(500).json({ message: err.message }); // Handle error and return JSON response with status 500 (Internal Server Error)
     }
-})
+});
 
 router.get('/productgroup/:id', getProductGroup, (req, res) => {
     res.json(res.productgroup);
