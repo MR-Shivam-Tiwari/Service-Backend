@@ -36,12 +36,25 @@ async function checkDuplicateAerb(req, res, next) {
 // GET all Aerb entries
 router.get('/aerb', async (req, res) => {
     try {
-        const aerbEntries = await Aerb.find();
-        res.json(aerbEntries);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+
+        const aerbEntries = await Aerb.find().skip(skip).limit(limit);
+        const totalAerbEntries = await Aerb.countDocuments();
+        const totalPages = Math.ceil(totalAerbEntries / limit);
+
+        res.json({
+            aerbEntries,
+            totalPages,
+            totalAerbEntries
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
+
 
 // GET Aerb entry by ID
 router.get('/aerb/:id', getAerbById, (req, res) => {

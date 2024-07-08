@@ -33,15 +33,27 @@ async function checkDuplicateReplacedPartCode(req, res, next) {
     next();
 }
 
-// GET all replaced part codes
 router.get('/replacedpartcodes', async (req, res) => {
     try {
-        const replacedPartCodes = await ReplacedPartCode.find();
-        res.json(replacedPartCodes);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+
+        const replacedPartCodes = await ReplacedPartCode.find().skip(skip).limit(limit);
+        const totalReplacedPartCodes = await ReplacedPartCode.countDocuments();
+        const totalPages = Math.ceil(totalReplacedPartCodes / limit);
+
+        res.json({
+            replacedPartCodes,
+            totalPages,
+            totalReplacedPartCodes
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
+
 
 // GET replaced part code by ID
 router.get('/replacedpartcodes/:id', getReplacedPartCodeById, (req, res) => {

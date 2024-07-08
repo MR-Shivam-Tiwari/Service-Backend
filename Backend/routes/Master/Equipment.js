@@ -34,12 +34,25 @@ async function checkDuplicateSerialNumber(req, res, next) {
 // GET all equipment
 router.get('/equipment', async (req, res) => {
     try {
-        const equipment = await Equipment.find();
-        res.json(equipment);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+
+        const equipment = await Equipment.find().skip(skip).limit(limit);
+        const totalEquipment = await Equipment.countDocuments();
+        const totalPages = Math.ceil(totalEquipment / limit);
+
+        res.json({
+            equipment,
+            totalPages,
+            totalEquipment
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
+
 
 // GET equipment by ID
 router.get('/equipment/:id', getEquipmentById, (req, res) => {

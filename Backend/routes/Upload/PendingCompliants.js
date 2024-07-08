@@ -36,12 +36,25 @@ async function checkDuplicateComplaintId(req, res, next) {
 // GET all PendingComplaints
 router.get('/pendingcomplaints', async (req, res) => {
     try {
-        const pendingComplaints = await PendingComplaints.find();
-        res.json(pendingComplaints);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+
+        const pendingComplaints = await PendingComplaints.find().skip(skip).limit(limit);
+        const totalPendingComplaints = await PendingComplaints.countDocuments();
+        const totalPages = Math.ceil(totalPendingComplaints / limit);
+
+        res.json({
+            pendingComplaints,
+            totalPages,
+            totalPendingComplaints
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
+
 
 // GET PendingComplaint by ID
 router.get('/pendingcomplaints/:id', getPendingComplaintById, (req, res) => {

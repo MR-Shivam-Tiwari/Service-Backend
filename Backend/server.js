@@ -25,9 +25,9 @@ const DealerStock  = require('./routes/Upload/DealerStock');
 const Hubstocks  = require('./routes/Upload/HubStock');
 const Pendinginstallations  = require('./routes/Upload/PendingInstallation');
 const Pendingcomplaints  = require('./routes/Upload/PendingCompliants');
-
+const cors = require('cors');
 const app = express();
-
+app.use(cors());
 // Middleware
 app.use(bodyParser.json());
 

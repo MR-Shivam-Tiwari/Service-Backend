@@ -34,8 +34,20 @@ async function checkDuplicateEmail(req, res, next) {
 // GET all users
 router.get('/user', async (req, res) => {
     try {
-        const users = await User.find();
-        res.json(users);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+
+        const users = await User.find().skip(skip).limit(limit);
+        const totalUsers = await User.countDocuments();
+        const totalPages = Math.ceil(totalUsers / limit);
+
+        res.json({
+            users,
+            totalPages,
+            totalUsers
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -145,6 +157,38 @@ router.delete('/user/:id', async (req, res) => {
             res.status(404).json({ message: "User Not Found" })
         }
         res.json({ message: 'Deleted User' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+router.get('/search', async (req, res) => {
+    try {
+        const { q } = req.query;
+        
+        if (!q) {
+            return res.status(400).json({ message: 'Query parameter is required' });
+        }
+
+        const query = {
+            $or: [
+                { firstname: { $regex: q, $options: 'i' } },
+                { lastname: { $regex: q, $options: 'i' } },
+                { email: { $regex: q, $options: 'i' } },
+                { mobilenumber: { $regex: q, $options: 'i' } },
+                { status: { $regex: q, $options: 'i' } },
+                { branch: { $regex: q, $options: 'i' } },
+                { country: { $regex: q, $options: 'i' } },
+                { state: { $regex: q, $options: 'i' } },
+                { city: { $regex: q, $options: 'i' } },
+                { department: { $regex: q, $options: 'i' } },
+                { manageremail: { $regex: q, $options: 'i' } },
+                { skills: { $regex: q, $options: 'i' } }
+            ]
+        };
+
+        const users = await User.find(query);
+
+        res.json(users);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

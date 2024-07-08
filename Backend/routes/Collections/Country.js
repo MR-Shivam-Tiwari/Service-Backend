@@ -30,12 +30,26 @@ router.post('/country', async (req, res) => {
 // Get all countries
 router.get('/country', async (req, res) => {
     try {
-        const countries = await Country.find();
-        res.json(countries); // Return all countries
+        const page = parseInt(req.query.page) || 1; // Current page number, defaulting to 1
+        const limit = parseInt(req.query.limit) || 10; // Number of documents per page, defaulting to 10
+
+        const skip = (page - 1) * limit; // Calculate the number of documents to skip
+
+        const countries = await Country.find().skip(skip).limit(limit); // Fetch countries for the current page
+        const totalCountries = await Country.countDocuments(); // Total number of countries
+
+        const totalPages = Math.ceil(totalCountries / limit); // Calculate total number of pages
+
+        res.json({
+            countries,
+            totalPages,
+            totalCountries
+        });
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        res.status(500).json({ message: err.message }); // Handle error and return JSON response with status 500 (Internal Server Error)
     }
 });
+
 
 // Get a single country
 router.get('/country/:id', getCountry, (req, res) => {

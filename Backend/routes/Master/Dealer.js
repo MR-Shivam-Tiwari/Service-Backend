@@ -34,8 +34,20 @@ async function checkDuplicateEmail(req, res, next) {
 // GET all dealers
 router.get('/dealer', async (req, res) => {
     try {
-        const dealers = await Dealer.find();
-        res.json(dealers);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+
+        const dealers = await Dealer.find().skip(skip).limit(limit);
+        const totalDealers = await Dealer.countDocuments();
+        const totalPages = Math.ceil(totalDealers / limit);
+
+        res.json({
+            dealers,
+            totalPages,
+            totalDealers
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

@@ -33,15 +33,27 @@ async function checkDuplicateMaterialCode(req, res, next) {
     next();
 }
 
-// GET all HubStocks
 router.get('/hubstocks', async (req, res) => {
     try {
-        const hubStocks = await HubStock.find();
-        res.json(hubStocks);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+
+        const hubStocks = await HubStock.find().skip(skip).limit(limit);
+        const totalHubStocks = await HubStock.countDocuments();
+        const totalPages = Math.ceil(totalHubStocks / limit);
+
+        res.json({
+            hubStocks,
+            totalPages,
+            totalHubStocks
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
+
 
 // GET HubStock by ID
 router.get('/hubstocks/:id', getHubStockById, (req, res) => {

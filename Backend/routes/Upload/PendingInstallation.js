@@ -36,8 +36,20 @@ async function checkDuplicateInvoiceNo(req, res, next) {
 // GET all PendingInstallations
 router.get('/pendinginstallations', async (req, res) => {
     try {
-        const pendingInstallations = await PendingInstallation.find();
-        res.json(pendingInstallations);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+
+        const pendingInstallations = await PendingInstallation.find().skip(skip).limit(limit);
+        const totalPendingInstallations = await PendingInstallation.countDocuments();
+        const totalPages = Math.ceil(totalPendingInstallations / limit);
+
+        res.json({
+            pendingInstallations,
+            totalPages,
+            totalPendingInstallations
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

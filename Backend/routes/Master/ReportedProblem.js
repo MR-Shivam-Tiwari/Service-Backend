@@ -40,12 +40,25 @@ async function checkDuplicateReportedProblem(req, res, next) {
 // GET all reported problems
 router.get('/reportedproblem', async (req, res) => {
     try {
-        const reportedProblems = await ReportedProblem.find();
-        res.json(reportedProblems);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+
+        const reportedProblems = await ReportedProblem.find().skip(skip).limit(limit);
+        const totalReportedProblems = await ReportedProblem.countDocuments();
+        const totalPages = Math.ceil(totalReportedProblems / limit);
+
+        res.json({
+            reportedProblems,
+            totalPages,
+            totalReportedProblems
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
+
 
 // GET reported problem by ID
 router.get('/reportedproblem/:id', getReportedProblemById, (req, res) => {

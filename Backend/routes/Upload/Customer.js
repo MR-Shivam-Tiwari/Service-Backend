@@ -36,15 +36,27 @@ async function checkDuplicateCustomer(req, res, next) {
     next();
 }
 
-// GET all customers
 router.get('/customer', async (req, res) => {
     try {
-        const customers = await Customer.find();
-        res.json(customers);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+
+        const customers = await Customer.find().skip(skip).limit(limit);
+        const totalCustomers = await Customer.countDocuments();
+        const totalPages = Math.ceil(totalCustomers / limit);
+
+        res.json({
+            customers,
+            totalPages,
+            totalCustomers
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
+
 
 // GET customer by ID
 router.get('/customer/:id', getCustomerById, (req, res) => {

@@ -30,7 +30,7 @@ async function checkDuplicateCity(req, res, next) {
 }
 
 
-router.post('/city',checkDuplicateCity, async (req, res) => {
+router.post('/city', checkDuplicateCity, async (req, res) => {
     try {
         const newCity = new City(req.body);
         const savedCity = await newCity.save();
@@ -44,8 +44,20 @@ router.post('/city',checkDuplicateCity, async (req, res) => {
 
 router.get('/city', async (req, res) => {
     try {
-        const city = await City.find();
-        res.json(city); // Return all states
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+        const city = await City.find().skip(skip).limit(limit);
+        const totalcity = await City.countDocuments();
+        const totalpages = Math.ceil(totalcity / limit);
+        res.json(
+            {
+                city,
+                totalpages,
+                totalcity
+            }
+        ); // Return all states
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -53,7 +65,7 @@ router.get('/city', async (req, res) => {
 
 
 
-router.get('/city/:id', getCity , (req,res) =>{
+router.get('/city/:id', getCity, (req, res) => {
     res.json(res.city)
 })
 

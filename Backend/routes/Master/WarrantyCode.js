@@ -33,15 +33,27 @@ async function checkDuplicateWarrantyCode(req, res, next) {
     next();
 }
 
-// GET all warranty codes
 router.get('/warrantycode', async (req, res) => {
     try {
-        const warrantyCodes = await WarrantyCode.find();
-        res.json(warrantyCodes);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+
+        const warrantyCodes = await WarrantyCode.find().skip(skip).limit(limit);
+        const totalWarrantyCodes = await WarrantyCode.countDocuments();
+        const totalPages = Math.ceil(totalWarrantyCodes / limit);
+
+        res.json({
+            warrantyCodes,
+            totalPages,
+            totalWarrantyCodes
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
+
 
 // GET warranty code by ID
 router.get('/warrantycode/:id', getWarrantyCodeById, (req, res) => {

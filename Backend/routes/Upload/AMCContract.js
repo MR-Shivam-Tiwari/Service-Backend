@@ -33,15 +33,27 @@ async function checkDuplicateSalesDoc(req, res, next) {
     next();
 }
 
-// GET all AMC Contracts
 router.get('/amccontracts', async (req, res) => {
     try {
-        const amcContracts = await AMCContract.find();
-        res.json(amcContracts);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+
+        const amcContracts = await AMCContract.find().skip(skip).limit(limit);
+        const totalAMCContracts = await AMCContract.countDocuments();
+        const totalPages = Math.ceil(totalAMCContracts / limit);
+
+        res.json({
+            amcContracts,
+            totalPages,
+            totalAMCContracts
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
+
 
 // GET AMC Contract by ID
 router.get('/amccontracts/:id', getAMCContractById, (req, res) => {

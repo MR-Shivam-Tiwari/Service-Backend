@@ -36,12 +36,25 @@ async function checkDuplicateMaterialCode(req, res, next) {
 // GET all DealerStocks
 router.get('/dealerstocks', async (req, res) => {
     try {
-        const dealerStocks = await DealerStock.find();
-        res.json(dealerStocks);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+
+        const dealerStocks = await DealerStock.find().skip(skip).limit(limit);
+        const totalDealerStocks = await DealerStock.countDocuments();
+        const totalPages = Math.ceil(totalDealerStocks / limit);
+
+        res.json({
+            dealerStocks,
+            totalPages,
+            totalDealerStocks
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
+
 
 // GET DealerStock by ID
 router.get('/dealerstocks/:id', getDealerStockById, (req, res) => {
