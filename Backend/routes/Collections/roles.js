@@ -1,7 +1,6 @@
 const express = require('express');
 const roleSchema = require('../../Model/CollectionSchema/roleSchema ');
 const router = express.Router();
-
 // Middleware to get a role by ID
 async function getRole(req, res, next) {
     let role;
@@ -39,8 +38,8 @@ router.get('/role', async (req, res) => {
 
         const skip = (page - 1) * limit; // Calculate the number of documents to skip
 
-        const roles = await Role.find().skip(skip).limit(limit); // Fetch roles for the current page
-        const totalRoles = await Role.countDocuments(); // Total number of roles
+        const roles = await roleSchema.find().skip(skip).limit(limit); // Fetch roles for the current page
+        const totalRoles = await roleSchema.countDocuments(); // Total number of roles
 
         const totalPages = Math.ceil(totalRoles / limit); // Calculate total number of pages
 
